@@ -6,6 +6,13 @@ Explainable advisor matching demo with:
 - explanation generation
 - risk / red-flag detection
 
+------
+
+## Demo
+images/demo.png
+
+------
+
 ## Run locally
 
 ```bash
