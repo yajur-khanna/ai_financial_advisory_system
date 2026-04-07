@@ -5,6 +5,7 @@ Serves the matching API and the React production build.
 from __future__ import annotations
 
 import os
+from contextlib import asynccontextmanager
 
 import pandas as pd
 import uvicorn
@@ -18,15 +19,6 @@ from src.load_data import load_advisors
 from src.match_engine import rank_advisors
 from src.scoring import USER_TO_ADVISOR_SPECIALTY_MAP
 
-app = FastAPI(title="FindMyAdvisor")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 _ALL_SPECIALTIES = {
     "financial planning", "portfolio management", "institutional management",
     "retirement", "adviser selection", "security analysis", "market timing", "other",
@@ -35,12 +27,23 @@ _ALL_SPECIALTIES = {
 _advisors_df: pd.DataFrame | None = None
 
 
-@app.on_event("startup")
-async def _load_data() -> None:
+@asynccontextmanager
+async def lifespan(_: FastAPI):
     global _advisors_df
     df = load_advisors()
     df["advisor_id"] = df.index.astype(str)
     _advisors_df = df
+    yield
+
+
+app = FastAPI(title="FindMyAdvisor", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # ─── Request / response models ────────────────────────────────────────────
@@ -98,4 +101,4 @@ if os.path.exists(_DIST):
 
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)
