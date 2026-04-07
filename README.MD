@@ -1,4 +1,4 @@
-# Mini Datalign
+# AI Based Financial Advisory Matching System
 
 Explainable advisor matching demo with:
 - eligibility filtering
