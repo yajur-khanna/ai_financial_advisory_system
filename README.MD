@@ -9,7 +9,7 @@ Explainable advisor matching demo with:
 ------
 
 ## Demo
-images/demo.png
+![Demo](./images/demo.png)
 
 ------
 
